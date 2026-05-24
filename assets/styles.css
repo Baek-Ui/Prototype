@@ -1,0 +1,68 @@
+/* Custom Stylesheet for Reflex Application */
+
+/* Target Radix Themes Input Placeholders for maximum visibility on dark backgrounds */
+.rt-TextFieldRoot input::placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+.rt-TextFieldInput::placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+/* Radix Themes 내부 input의 입력 글자 색상을 선명한 흰색으로 강제 오버라이드 */
+.rt-TextFieldRoot input {
+    color: #FFFFFF !important;
+}
+
+.rt-TextFieldInput {
+    color: #FFFFFF !important;
+}
+
+input {
+    color: #FFFFFF !important;
+}
+
+/* Custom premium scrollbar for native scrollable areas */
+::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent !important;
+    border-radius: 4px !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5) !important;
+    border-radius: 4px !important;
+    transition: background 0.2s ease !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Style Radix Themes custom ScrollArea elements (like the page scrollbar) */
+.rt-ScrollAreaScrollbar {
+    background: transparent !important;
+}
+
+.rt-ScrollAreaThumb {
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    border-radius: 9999px !important;
+}
+
+.rt-ScrollAreaThumb:hover {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+}

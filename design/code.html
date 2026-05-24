@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Baek-ui | AI YouTube Fake Video Detection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#8083ff",
+                        "on-tertiary": "#4f2500",
+                        "on-primary-fixed": "#07006c",
+                        "on-surface": "#e4e1ed",
+                        "outline": "#908fa0",
+                        "secondary": "#d0bcff",
+                        "surface": "#13131b",
+                        "primary-fixed": "#e1e0ff",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "tertiary-fixed": "#ffdcc5",
+                        "tertiary": "#ffb783",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#e4e1ed",
+                        "inverse-primary": "#494bd6",
+                        "surface-tint": "#c0c1ff",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-secondary": "#3c0091",
+                        "surface-container-high": "#292932",
+                        "surface-dim": "#13131b",
+                        "surface-bright": "#393841",
+                        "secondary-fixed-dim": "#d0bcff",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "secondary-fixed": "#e9ddff",
+                        "surface-container": "#1f1f27",
+                        "on-primary": "#1000a9",
+                        "tertiary-container": "#d97721",
+                        "background": "#13131b",
+                        "surface-container-lowest": "#0d0d15",
+                        "surface-container-highest": "#34343d",
+                        "primary": "#c0c1ff",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed": "#301400",
+                        "outline-variant": "#464554",
+                        "inverse-on-surface": "#303038",
+                        "surface-variant": "#34343d",
+                        "on-primary-container": "#0d0096",
+                        "on-background": "#e4e1ed",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-tertiary-container": "#452000",
+                        "surface-container-low": "#1b1b23",
+                        "secondary-container": "#571bc1",
+                        "on-secondary-fixed-variant": "#5516be",
+                        "on-secondary-fixed": "#23005c",
+                        "on-secondary-container": "#c4abff",
+                        "on-error": "#690005",
+                        "error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "80px",
+                        "unit": "4px",
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Geist", "Inter", "sans-serif"],
+                        "display-xl": ["Geist", "Inter", "sans-serif"],
+                        "headline-md": ["Geist", "Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #13131b;
+            color: #e4e1ed;
+        }
+        .glass-panel {
+            background: rgba(31, 31, 39, 0.4);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 40px -10px rgba(128, 131, 255, 0.2);
+            border-color: rgba(128, 131, 255, 0.4);
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, rgba(19, 19, 27, 0) 70%);
+        }
+        .primary-button {
+            background: linear-gradient(135deg, #8083ff 0%, #d0bcff 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .primary-button:hover {
+            box-shadow: 0 0 20px rgba(128, 131, 255, 0.4);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="font-body-md">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-background/80 dark:bg-background/80 backdrop-blur-xl border-b border-white/10">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 max-w-container-max mx-auto"><div class="flex items-center gap-10">
+<a class="flex items-center gap-2 font-bold text-on-surface tracking-tighter cursor-pointer active:scale-95 transition-transform" href="#"><img alt="Baek-ui Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ugHYMcxorYjQH8qkTa-ea7ISUS05WbNW4DNqh5GA1MrJtjae27yko_D8dyg3NsCh2qWElKCr_o8Dwccm7pLni2deaF3qp9Dsn97NfLbYIl1cXc1-3OQUGWKq2ao37Yk-HCpORIEzc6xY8SAZh8vRtz-hfA85z494OPoZ-fefFEli5X4u8sRFWQ0ffe63P6QPwQyTZljud1MApmuOSFmSZIQD1I-oh5mhLJTFXIwx0HmnWi4R2OVZmW5m7I"/>
+<span class="text-xl font-bold text-on-surface tracking-tighter">Baek-ui</span></a>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-primary font-bold hover:text-primary transition-colors duration-300" href="#">Features</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">Technology</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">API Documentation</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">Pricing</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:block text-on-surface font-medium hover:text-primary transition-colors px-4 py-2">Sign In</button>
+<button class="primary-button text-on-primary-container font-bold px-6 py-2.5 rounded-full text-sm bg-primary text-on-primary font-semibold hover:opacity-90">Get Started</button>
+</div></div>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[819px] flex flex-col items-center justify-center px-margin-mobile hero-gradient overflow-hidden">
+<div class="max-w-4xl w-full text-center space-y-12 z-10">
+<div class="relative inline-block px-8 py-6 rounded-2xl border-2 border-primary/30 bg-primary/5 shadow-[0_0_50px_-12px_rgba(128,131,255,0.3)] mb-8">
+<h1 class="text-[32px] md:text-[48px] font-bold leading-tight tracking-tight text-on-surface text-center">
+        유튜브 가짜 뉴스를 찾아내는<br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary inline-block mt-2">가장 완벽한 방법</span>
+</h1>
+</div>
+<!-- Gemini-inspired Input Area -->
+<div class="w-full max-w-3xl mx-auto glass-panel rounded-[2rem] p-4 glow-hover transition-all duration-500">
+<div class="flex flex-col gap-4 p-2">
+<div class="flex items-start gap-4 px-4 pt-2">
+<span class="material-symbols-outlined text-primary mt-1" data-icon="search">search</span>
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-on-surface text-lg placeholder:text-outline-variant resize-none min-h-[60px]" placeholder="분석할 유튜브 비디오 URL을 입력하세요" rows="1"></textarea>
+</div>
+<div class="flex justify-between items-center px-2">
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:bg-white/5 transition-all text-sm font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="auto_awesome">auto_awesome</span>
+                                    Fast Analysis
+                                </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:bg-white/5 transition-all text-sm font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="dataset">dataset</span>
+                                    Historical Data
+                                </button>
+</div>
+<button class="primary-button h-12 w-12 rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Chips -->
+<div class="flex flex-wrap justify-center gap-3">
+<span class="px-5 py-2 rounded-full bg-surface-container border border-white/5 text-sm font-medium hover:border-primary/50 transition-colors cursor-pointer">Deepfake Detection</span>
+<span class="px-5 py-2 rounded-full bg-surface-container border border-white/5 text-sm font-medium hover:border-primary/50 transition-colors cursor-pointer">Audio Spoofing</span>
+<span class="px-5 py-2 rounded-full bg-surface-container border border-white/5 text-sm font-medium hover:border-primary/50 transition-colors cursor-pointer">Fact Checking</span>
+<span class="px-5 py-2 rounded-full bg-surface-container border border-white/5 text-sm font-medium hover:border-primary/50 transition-colors cursor-pointer">Metadata Integrity</span>
+</div>
+</div>
+</section>
+<!-- Capabilities Section -->
+<section class="py-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-col md:flex-row items-end justify-between mb-16 gap-8">
+<div class="max-w-2xl">
+<p class="font-label-mono text-primary uppercase tracking-[0.2em] mb-4">Core Technology</p>
+<h2 class="font-display-lg text-headline-md text-on-surface">강력한 멀티모달 AI가 영상의 모든 구성을 정밀 분석합니다.</h2>
+</div>
+<div class="text-on-surface-variant font-body-lg max-w-sm">
+                    비주얼, 오디오, 텍스트 컨텍스트를 동시에 처리하여 고도화된 가짜 뉴스와 조작된 미디어를 정확히 식별합니다.
+                </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Video Analysis -->
+<div class="glass-panel p-10 rounded-[2rem] glow-hover transition-all duration-500 group border-white/10">
+<div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="videocam">videocam</span>
+</div>
+<h3 class="text-xl font-bold mb-4 text-on-surface">프레임 정밀 분석</h3>
+<p class="text-on-surface-variant leading-relaxed">픽셀 단위의 미세한 왜곡과 딥페이크 아티팩트를 실시간으로 탐지하여 영상 변조 여부를 확인합니다.</p>
+</div>
+<!-- Audio Analysis -->
+<div class="glass-panel p-10 rounded-[2rem] glow-hover transition-all duration-500 group border-white/10">
+<div class="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-secondary/20 transition-colors">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="settings_voice">settings_voice</span>
+</div>
+<h3 class="text-xl font-bold mb-4 text-on-surface">음성 위조 탐지</h3>
+<p class="text-on-surface-variant leading-relaxed">AI로 생성된 가짜 목소리나 변조된 오디오 주파수 패턴을 분석하여 신뢰도를 측정합니다.</p>
+</div>
+<!-- Metadata Analysis -->
+<div class="glass-panel p-10 rounded-[2rem] glow-hover transition-all duration-500 group border-white/10">
+<div class="w-14 h-14 bg-primary-container/10 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-primary-container/20 transition-colors">
+<span class="material-symbols-outlined text-primary-container text-3xl" data-icon="description">description</span>
+</div>
+<h3 class="text-xl font-bold mb-4 text-on-surface">메타데이터 검증</h3>
+<p class="text-on-surface-variant leading-relaxed">파일 헤더부터 촬영 기기 정보, 게시 이력까지 모든 디지털 발자국을 추적하여 무결성을 보장합니다.</p>
+</div>
+</div>
+</section>
+<!-- Analysis Features -->
+<section class="py-32 bg-surface-container-lowest overflow-hidden">
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+<div class="space-y-12">
+<div class="space-y-6">
+<h2 class="font-display-lg text-headline-md text-on-surface">속도와 정확성,<br/>어느 것도 타협하지 않습니다.</h2>
+<p class="text-on-surface-variant text-lg">엔터프라이즈급 아키텍처로 설계된 Baek-ui는 압도적인 속도로 진실을 규명합니다.</p>
+</div>
+<div class="space-y-8">
+<div class="flex gap-6 items-center">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="bolt">bolt</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface text-lg mb-2">0.3s 초고속 분석</h4>
+<p class="text-on-surface-variant">독자적인 경량화 모델을 통해 고화질 영상도 수초 내에 분석 결과 리포트를 생성합니다.</p>
+</div>
+</div>
+<div class="flex gap-6 items-center">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="token">token</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface text-lg mb-2">블록체인 기반 무결성</h4>
+<p class="text-on-surface-variant">모든 분석 결과는 위변조가 불가능한 블록체인 네트워크에 기록되어 영구적인 공신력을 갖습니다.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -inset-10 bg-primary/20 blur-[120px] rounded-full"></div>
+<div class="relative glass-panel rounded-3xl p-4 overflow-hidden shadow-2xl border-white/20">
+<img class="rounded-2xl w-full aspect-video object-cover" data-alt="A high-tech digital interface showing complex data visualizations, network nodes, and futuristic security metrics. The scene is dominated by a dark charcoal background with vibrant indigo and electric purple neon lines connecting various data points, creating a sense of advanced artificial intelligence and cyber-security integrity. Soft light glows from the screen elements, emphasizing a clean, modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBu5fYdxtCN1rMD1MLamDHPPA_SY3OHrPA6HYnbmsjCZH7qLF2Y9YAqBkoI5pMadVvK1RYMeMZXHthvHpQrwzYKSU2UUkUm8tyQvhKLHSj8OipGV1G_4ZVW1YPTUGgx86MAYMNK125d3STMqjObiFELUA2vp40UALGYqX4Ksl71oVYdBrpqDda89j9rdXlOv8y6GTu-gi8muhVSDcFULPJxWQyjjO4tgU8kV5hm6y0NODFjzoYt0tlPaJkvKJkUkn4boo9ossBBQAo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent opacity-60"></div>
+<div class="absolute bottom-8 left-8 right-8">
+<div class="flex items-center gap-3 bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10">
+<div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+<span class="text-xs font-label-mono text-white tracking-widest uppercase">Real-time Analysis Active</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Monitoring Section -->
+<section class="py-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-center">
+<h2 class="font-display-lg text-headline-md mb-8">모든 플랫폼을 아우르는 보안망</h2>
+<p class="text-on-surface-variant mb-16 max-w-2xl mx-auto">유튜브를 넘어 틱톡, 인스타그램 릴스 등 모든 숏폼 콘텐츠와 라이브 스트리밍까지 동일한 수준의 보안 기술을 적용할 수 있습니다.</p>
+<div class="flex flex-wrap justify-center gap-8 mb-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
+<span class="text-4xl font-bold tracking-tighter">YouTube</span>
+<span class="text-4xl font-bold tracking-tighter">TikTok</span>
+<span class="text-4xl font-bold tracking-tighter">Instagram</span>
+<span class="text-4xl font-bold tracking-tighter">Twitch</span>
+</div>
+<button class="px-8 py-4 rounded-full border border-white/20 font-bold hover:bg-white/5 transition-all flex items-center gap-3 mx-auto">
+<span class="material-symbols-outlined" data-icon="api">api</span>
+                View API Documentation
+            </button>
+</section>
+<!-- Final CTA -->
+<section class="py-40 px-margin-mobile hero-gradient">
+<div class="max-w-4xl mx-auto text-center space-y-10">
+<h2 class="font-display-xl text-display-xl">당신의 콘텐츠 경험을<br/>안전하게 보호하세요</h2>
+<p class="text-on-surface-variant text-xl max-w-2xl mx-auto">가짜 뉴스로부터 브랜드를 보호하고 신뢰할 수 있는 디지털 생태계를 구축하는 일, 이제 Baek-ui와 함께 시작하세요.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-6">
+<button class="primary-button text-on-primary-container text-lg font-bold px-12 py-5 rounded-full">Secure Your Content Now</button>
+<button class="glass-panel text-on-surface text-lg font-bold px-12 py-5 rounded-full hover:bg-white/10 transition-colors">Request a Demo</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest w-full py-20 border-t border-white/5">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop gap-gutter max-w-container-max mx-auto">
+<div class="space-y-6 text-center md:text-left border-b md:border-b-0 border-white/5 pb-8 md:pb-0">
+<div class="font-bold text-on-surface"><div class="flex items-center gap-2 justify-center md:justify-start"><img alt="Baek-ui Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ugHYMcxorYjQH8qkTa-ea7ISUS05WbNW4DNqh5GA1MrJtjae27yko_D8dyg3NsCh2qWElKCr_o8Dwccm7pLni2deaF3qp9Dsn97NfLbYIl1cXc1-3OQUGWKq2ao37Yk-HCpORIEzc6xY8SAZh8vRtz-hfA85z494OPoZ-fefFEli5X4u8sRFWQ0ffe63P6QPwQyTZljud1MApmuOSFmSZIQD1I-oh5mhLJTFXIwx0HmnWi4R2OVZmW5m7I"/>
+<span class="text-xl font-bold text-on-surface tracking-tighter">Baek-ui</span></div></div>
+<p class="text-on-surface-variant font-body-md max-w-xs">© 2024 Baek-ui AI. Protecting digital integrity with advanced multimodal learning.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8 md:gap-12 md:justify-end flex-1">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Features</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Technology</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">API Documentation</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Privacy Policy</a>
+</div>
+<div class="flex gap-6">
+<a class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-primary/20 transition-all" href="#">
+<span class="material-symbols-outlined text-on-surface-variant text-xl" data-icon="language">language</span>
+</a>
+<a class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-primary/20 transition-all" href="#">
+<span class="material-symbols-outlined text-on-surface-variant text-xl" data-icon="terminal">terminal</span>
+</a>
+</div>
+</div>
+</footer>
+</body></html>

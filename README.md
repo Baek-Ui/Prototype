@@ -1,15 +1,14 @@
 # ✨ 백의(Baek-ui) AI 미디어 무결성 정밀 분석 에이전트 Prototype
 
-## 🔖 백의 로고
+## 🧑‍🎓 2026년 학생 창업유망팀 300⁺ 출품작
+### 🔖 백의 로고
 <img width="128" src="./design/baek_ui_logo.png" alt="Baek-Ui Logo">
 
-## 🖼️ 메인 디자인 컨셉
+### 🖼️ 메인 디자인 컨셉
 <img width="1000" src="./design/screen_prototype.png" alt="Baek-Ui Screenshot">
 
-## 🧑‍🎓 2026년 학생 창업유망팀 300⁺ 출품작
-
 ### 🎥 실시간 라이브 데모 (Reflex Cloud)
-**공식 배포 주소:** [https://workspaces-lime-ocean.reflex.run/](https://workspaces-lime-ocean.reflex.run/)
+**공식 배포 주소:** [프로토타입 사이트 링크](https://workspaces-lime-ocean.reflex.run/)
 
 ## 📖 개요
 백의(Baek-ui)는 딥페이크 영상과 가짜뉴스 확산을 방지하기 위해 개발된 차세대 미디어 무결성 검증 플랫폼입니다. 최신 Generative AI 기술의 발전으로 인해 인간의 눈으로는 구별하기 어려운 가짜 영상 콘텐츠가 범람하는 시대에, 백의는 신뢰할 수 있는 미디어 검증 솔루션을 제공하여 정보 생태계의 투명성을 확보하는 것을 목표로 합니다.

@@ -521,7 +521,7 @@ def landing_hero_section() -> rx.Component:
         # Page Title Header
         rx.vstack(
             rx.heading(
-                "가짜 뉴스를 찾아내는",
+                "진짜 맥락을 찾아내는",
                 size="9",
                 color=styles.TEXT_WHITE,
                 text_align="center",
@@ -766,7 +766,7 @@ def tech_section() -> rx.Component:
                 align="start",
             ),
             rx.text(
-                "비주얼, 오디오, 텍스트 컨텍스트를 동시에 처리하여 고도화된 가짜 뉴스와 조작된 미디어를 정확히 식별합니다.",
+                "비주얼, 오디오, 텍스트 컨텍스트를 동시에 처리하여 고도화된 가짜 정보와 조작된 미디어를 정확히 식별합니다.",
                 color=styles.TEXT_GRAY,
                 max_width="400px",
             ),

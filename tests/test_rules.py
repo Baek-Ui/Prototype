@@ -182,3 +182,158 @@ def test_account_freeze_various_particles_match():
     for case in test_cases:
         matched = [rule.keyword for rule in RULES if rule.pattern.search(case)]
         assert "계좌 동결 위협" in matched, f"Failed to match: {case}"
+
+
+# Round 3 regression tests: Bare nouns to action forms (11 false positives + 계좌동결 regression)
+def test_agency_excludes_app_mention_without_installation_demand():
+    """기관 앱 소개는 기관 사칭으로 매칭되지 않아야 함"""
+    benign = "국세청 앱에서 연말정산 신고를 편리하게 하실 수 있습니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "기관 사칭" not in matched
+
+
+def test_agency_app_installation_demand_matches():
+    """앱 설치 요구와 함께하는 기관 사칭은 매칭되어야 함"""
+    phishing = "국세청입니다. 앱을 설치하고 본인인증하세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "기관 사칭" in matched
+
+
+def test_agency_excludes_account_mention_without_transfer_demand():
+    """기관의 계좌 안내는 기관 사칭으로 매칭되지 않아야 함"""
+    benign = "국세청에서 계좌 환급 절차 안내드립니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "기관 사칭" not in matched
+
+
+def test_agency_account_demand_matches():
+    """계좌 요구와 함께하는 기관 사칭은 매칭되어야 함"""
+    phishing = "국세청입니다. 계좌번호를 알려주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "기관 사칭" in matched
+
+
+def test_agency_excludes_password_advice_without_demand():
+    """기관의 비밀번호 변경 권고는 기관 사칭으로 매칭되지 않아야 함"""
+    benign = "금융감독원에서 비밀번호를 주기적으로 변경하라고 권고합니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "기관 사칭" not in matched
+
+
+def test_agency_password_disclosure_demand_matches():
+    """비밀번호 공개 요구와 함께하는 기관 사칭은 매칭되어야 함"""
+    phishing = "금융감독원입니다. 비밀번호를 입력해주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "기관 사칭" in matched
+
+
+def test_agency_excludes_id_request_in_legitimate_context():
+    """기관 방문 시 신분증 지참은 기관 사칭으로 매칭되지 않아야 함"""
+    benign = "건강보험공단 방문 시 신분증을 지참해주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "기관 사칭" not in matched
+
+
+def test_agency_id_copy_demand_matches():
+    """신분증 사본 요구와 함께하는 기관 사칭은 매칭되어야 함"""
+    phishing = "금융감독원입니다. 신분증 사본을 보내주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "기관 사칭" in matched
+
+
+def test_investigative_agency_excludes_app_mention_without_installation_demand():
+    """경찰청 안전신문고 앱 소개는 수사기관 사칭으로 매칭되지 않아야 함"""
+    benign = "경찰청 안전신문고 앱에서 민원을 신청할 수 있습니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "수사기관 사칭" not in matched
+
+
+def test_investigative_agency_excludes_account_mention_without_transfer_demand():
+    """경찰서의 계좌 신고 안내는 수사기관 사칭으로 매칭되지 않아야 함"""
+    benign = "경찰서에서 사기 피해 계좌 신고 접수 안내드립니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "수사기관 사칭" not in matched
+
+
+def test_investigative_agency_account_demand_matches():
+    """계좌 요구와 함께하는 수사기관 사칭은 매칭되어야 함"""
+    phishing = "경찰청입니다. 피해 계좌번호를 알려주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "수사기관 사칭" in matched
+
+
+def test_urgency_excludes_password_change_advice():
+    """보안을 위한 비밀번호 변경 권고는 긴급성 강조로 매칭되지 않아야 함"""
+    benign = "보안을 위해 즉시 비밀번호를 변경해 주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "긴급성 강조" not in matched
+
+
+def test_urgency_password_demand_matches():
+    """비밀번호 입력 요구와 함께하는 긴급성은 매칭되어야 함"""
+    phishing = "지금 즉시 비밀번호를 입력해주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "긴급성 강조" in matched
+
+
+def test_urgency_excludes_app_update_advice():
+    """앱 업데이트 권고는 긴급성 강조로 매칭되지 않아야 함"""
+    benign = "지금 바로 앱 업데이트를 진행해 주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "긴급성 강조" not in matched
+
+
+def test_urgency_app_installation_demand_matches():
+    """앱 설치 요구와 함께하는 긴급성은 매칭되어야 함"""
+    phishing = "지금 바로 앱을 설치해서 본인인증하세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "긴급성 강조" in matched
+
+
+def test_phone_damage_excludes_money_mention_without_transfer_demand():
+    """휴대폰 고장 후 금전 소비는 가족사칭 정황으로 매칭되지 않아야 함"""
+    benign = "엄마 폰 액정 깨져서 수리비로 돈 좀 썼어"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "가족사칭 정황" not in matched
+
+
+def test_phone_damage_money_transfer_demand_matches():
+    """돈 송금 요구와 함께하는 폰 고장은 가족사칭으로 매칭되어야 함"""
+    phishing = "엄마 폰 액정 깨졌어, 돈을 보내줄래?"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "가족사칭 정황" in matched
+
+
+def test_phone_damage_excludes_number_mention_without_contact_demand():
+    """폰 고장 후 전화번호 언급은 가족사칭 정황으로 매칭되지 않아야 함"""
+    benign = "엄마 폰 액정 깨졌어, 전화번호 저장해놨으니 걱정마"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "가족사칭 정황" not in matched
+
+
+def test_phone_damage_new_contact_channel_matches():
+    """새 번호로의 연락 요구와 함께하는 폰 고장은 가족사칭으로 매칭되어야 함"""
+    phishing = "엄마 폰 액정 깨졌어, 이 번호로 카톡 줘."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "가족사칭 정황" in matched
+
+
+def test_phone_damage_excludes_message_mention_without_contact_demand():
+    """폰 고장 후 문자 언급은 가족사칭 정황으로 매칭되지 않아야 함"""
+    benign = "엄마 폰 액정 깨졌어, 문자는 나중에 확인할게"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "가족사칭 정황" not in matched
+
+
+def test_phone_damage_message_contact_demand_matches():
+    """문자로 연락 요청과 함께하는 폰 고장은 가족사칭으로 매칭되어야 함"""
+    phishing = "엄마 폰 액정 깨졌어, 문자 줘."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "가족사칭 정황" in matched
+
+
+def test_account_freeze_no_separator_matches():
+    """공백 없는 계좌동결도 매칭되어야 함"""
+    phishing = "계좌동결됩니다"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "계좌 동결 위협" in matched

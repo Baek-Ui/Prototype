@@ -4,3 +4,14 @@ assets/external/
 __pycache__/
 *.py[cod]
 .web
+
+# Agent
+## Ignore Agent Files
+.claude/
+.agent/
+CLAUDE.md
+AGENTS.md
+docs/
+
+# Business Asset
+**/documents/*

@@ -21,7 +21,10 @@ class RiskLevel(Enum):
     def from_score(cls, score: int) -> "RiskLevel":
         if not 0 <= score <= 100:
             raise ValueError(f"위험 점수는 0과 100 사이여야 합니다: {score}")
-        if score < 40:
+        # 주의 경계 35: 가중치 25짜리 규칙 하나만 걸린 문구가 결합식(규칙 0.6 +
+        # 유사도 0.4)을 거치면 35점대에 모이는데, 정상 문구는 홀드아웃 측정에서
+        # 최고 22점에 그쳐 두 분포가 이 지점에서 분리된다.
+        if score < 35:
             return cls.SAFE
         if score < 70:
             return cls.CAUTION

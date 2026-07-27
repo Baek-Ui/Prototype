@@ -6,8 +6,8 @@ from workspaces.domain import RiskLevel
     "score,expected",
     [
         (0, RiskLevel.SAFE),
-        (39, RiskLevel.SAFE),
-        (40, RiskLevel.CAUTION),
+        (34, RiskLevel.SAFE),
+        (35, RiskLevel.CAUTION),
         (69, RiskLevel.CAUTION),
         (70, RiskLevel.DANGER),
         (100, RiskLevel.DANGER),

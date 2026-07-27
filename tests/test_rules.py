@@ -105,3 +105,80 @@ def test_phone_damage_phishing_still_matches():
     phishing = "엄마 나 폰 액정 깨져서 수리 맡겼어. 이 번호로 카톡 줘."
     matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
     assert "가족사칭 정황" in matched
+
+
+# Round 2 regression tests: More specific lookahead word validation
+def test_urgency_excludes_generic_confirmation_request():
+    """일반 확인 요청(금전 무관)은 긴급성 강조로 매칭되지 않아야 함"""
+    benign = "고객님의 정기예금 이자가... 즉시 확인 바랍니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "긴급성 강조" not in matched
+
+
+def test_urgency_with_financial_action_still_matches():
+    """금전 행동(송금, 이체 등)과 함께하는 긴급성은 매칭되어야 함"""
+    phishing = "지금 즉시 본인인증을 완료해서 계좌로 200만원을 보내주세요"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "긴급성 강조" in matched
+
+
+def test_investigative_agency_excludes_legitimate_traffic_info():
+    """교통사고 정보 안내는 수사기관 사칭으로 매칭되지 않아야 함"""
+    benign = "관할 경찰서에서 교통사고 관련 정보 안내드립니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "수사기관 사칭" not in matched
+
+
+def test_investigative_agency_excludes_legitimate_recruitment_info():
+    """채용 정보 안내는 검찰 사칭으로 매칭되지 않아야 함"""
+    benign = "검찰청 홈페이지에서 채용 정보를 확인하실 수 있습니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "수사기관 사칭" not in matched
+
+
+def test_investigative_agency_with_personal_info_demand_matches():
+    """개인정보 요구와 함께하는 수사기관 사칭은 매칭되어야 함"""
+    phishing = "경찰청입니다. 귀하의 개인정보 본인확인이 필요합니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "수사기관 사칭" in matched
+
+
+def test_agency_excludes_legitimate_tax_info():
+    """세금 정보 안내는 기관 사칭으로 매칭되지 않아야 함"""
+    benign = "국세청에서 연말정산 세금 정보 안내드립니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "기관 사칭" not in matched
+
+
+def test_agency_excludes_legitimate_finance_info():
+    """금융 정보 안내는 기관 사칭으로 매칭되지 않아야 함"""
+    benign = "금융감독원 홈페이지에서 금융 정보를 확인하실 수 있습니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "기관 사칭" not in matched
+
+
+def test_agency_with_personal_info_demand_matches():
+    """개인정보 요구와 함께하는 기관 사칭은 매칭되어야 함"""
+    phishing = "국세청입니다. 개인정보 본인확인을 위해 주민등록번호를 알려주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "기관 사칭" in matched
+
+
+def test_account_freeze_with_particle_matches():
+    """한국어 조사를 포함한 계좌 동결 표현은 매칭되어야 함"""
+    phishing = "계좌가 동결됩니다"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "계좌 동결 위협" in matched
+
+
+def test_account_freeze_various_particles_match():
+    """다양한 조사를 포함한 계좌 동결 표현들이 매칭되어야 함"""
+    test_cases = [
+        "당신의 계좌는 동결됩니다",
+        "계좌를 동결하겠습니다",
+        "계좌가 정지됩니다",
+        "계좌 동결 예정입니다"
+    ]
+    for case in test_cases:
+        matched = [rule.keyword for rule in RULES if rule.pattern.search(case)]
+        assert "계좌 동결 위협" in matched, f"Failed to match: {case}"

@@ -337,3 +337,147 @@ def test_account_freeze_no_separator_matches():
     phishing = "계좌동결됩니다"
     matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
     assert "계좌 동결 위협" in matched
+
+
+# Round 4 regression tests: 명사+조사만으로는 신호가 아니다 — 동사가 신호다.
+# Round 3은 "계좌" -> "계좌로", "개인정보" -> "개인정보를"처럼 조사만 붙였는데,
+# 조사가 붙어도 명사는 여전히 "언급되는 대상"일 뿐 "요구되는 행동"이 아니다.
+# 아래는 실제 기관의 정상 안내문에서도 그대로 등장하는 명사+조사 표현들이며,
+# 뒤에 요구 동사(이체/송금/입금/알려/보내/입력)가 없으면 매칭되지 않아야 한다.
+def test_agency_excludes_account_particle_without_transfer_verb():
+    """계좌로 처리한다는 정상 환급 안내는 기관 사칭으로 매칭되지 않아야 함"""
+    benign = "국세청에서 환급금은 신청하신 계좌로 처리됩니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "기관 사칭" not in matched
+
+
+def test_agency_excludes_personal_info_particle_without_demand_verb():
+    """개인정보를 보호한다는 정상 안내는 기관 사칭으로 매칭되지 않아야 함"""
+    benign = "국세청에서 고객님의 개인정보를 소중히 보호하고 있습니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "기관 사칭" not in matched
+
+
+def test_agency_excludes_account_number_particle_without_demand_verb():
+    """계좌번호를 문자로 안내한다는 정상 안내는 기관 사칭으로 매칭되지 않아야 함"""
+    benign = "국세청에서 등록하신 계좌번호를 문자로 안내해 드립니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "기관 사칭" not in matched
+
+
+def test_investigative_agency_excludes_account_particle_without_transfer_verb():
+    """계좌로 후원금이 전달된다는 정상 안내는 수사기관 사칭으로 매칭되지 않아야 함"""
+    benign = "경찰청에서 실종 아동의 계좌로 후원금이 전달됩니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "수사기관 사칭" not in matched
+
+
+def test_investigative_agency_excludes_personal_info_particle_without_demand_verb():
+    """개인정보를 보호한다는 정상 안내는 수사기관 사칭으로 매칭되지 않아야 함"""
+    benign = "검찰청에서 개인정보를 철저히 보호합니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "수사기관 사칭" not in matched
+
+
+def test_urgency_excludes_personal_info_particle_without_demand_verb():
+    """개인정보를 보관하라는 일반 보안 권고는 긴급성 강조로 매칭되지 않아야 함"""
+    benign = "지금 바로 개인정보를 안전하게 보관하세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "긴급성 강조" not in matched
+
+
+def test_urgency_excludes_id_particle_without_send_verb():
+    """신분증을 준비해두라는 일반 안내는 긴급성 강조로 매칭되지 않아야 함"""
+    benign = "지금 바로 신분증을 준비해 두시면 편리합니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "긴급성 강조" not in matched
+
+
+def test_phone_damage_excludes_password_particle_without_demand_verb():
+    """비밀번호를 잊어버렸다는 진술은 가족사칭 정황으로 매칭되지 않아야 함"""
+    benign = "엄마 폰 액정 깨졌어, 근데 비밀번호를 잊어버렸었나봐 원래"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "가족사칭 정황" not in matched
+
+
+def test_phone_damage_excludes_id_particle_without_send_verb():
+    """신분증 재발급 걱정은 가족사칭 정황으로 매칭되지 않아야 함"""
+    benign = "엄마 폰 액정 깨졌어, 신분증을 재발급 받아야 할 것 같아서 걱정이야"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "가족사칭 정황" not in matched
+
+
+# 명사+조사 문제를 고쳐도, lookahead 대안이 단어 경계 없이 부분 문자열로
+# 매칭되면 "자동이체", "송금 통계"처럼 무관한 복합어 안에서 여전히 오탐이
+# 발생한다. 이체/송금/입금은 활용형 어미가 바로 붙어야만 신호로 인정한다.
+def test_agency_excludes_auto_transfer_service_mention():
+    """자동이체 서비스 안내는 기관 사칭으로 매칭되지 않아야 함"""
+    benign = "국세청에서 자동이체 서비스를 안내드립니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "기관 사칭" not in matched
+
+
+def test_investigative_agency_excludes_remittance_statistics_mention():
+    """송금 통계 발표 안내는 수사기관 사칭으로 매칭되지 않아야 함"""
+    benign = "경찰청에서 교통사고 관련 송금 통계를 발표했습니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(benign)]
+    assert "수사기관 사칭" not in matched
+
+
+# 위 각 항목에 대응하는 피싱 문구는 여전히(그리고 조사가 없어도) 매칭되어야
+# 한다 — 신호는 동사이지 조사가 아니기 때문이다.
+def test_agency_account_transfer_demand_matches():
+    """계좌로 송금하라는 요구가 있는 기관 사칭은 매칭되어야 함"""
+    phishing = "국세청입니다. 아래 계좌로 즉시 송금하시기 바랍니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "기관 사칭" in matched
+
+
+def test_agency_personal_info_send_demand_matches():
+    """개인정보를 보내라는 요구가 있는 기관 사칭은 매칭되어야 함"""
+    phishing = "국세청입니다. 개인정보를 문자로 보내주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "기관 사칭" in matched
+
+
+def test_investigative_agency_account_number_no_particle_demand_matches():
+    """조사 없이 '계좌번호 좀 알려줘'로 요구해도 매칭되어야 함"""
+    phishing = "경찰청입니다. 피해 계좌번호 좀 알려주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "수사기관 사칭" in matched
+
+
+def test_urgency_id_send_demand_matches():
+    """신분증을 보내라는 요구와 함께하는 긴급성은 매칭되어야 함"""
+    phishing = "지금 바로 신분증을 사진 찍어서 보내주세요."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "긴급성 강조" in matched
+
+
+def test_phone_damage_password_tell_demand_matches():
+    """비밀번호를 알려달라는 요구와 함께하는 폰 고장은 가족사칭으로 매칭되어야 함"""
+    phishing = "엄마 폰 액정 깨졌어, 비밀번호를 좀 알려줘"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "가족사칭 정황" in matched
+
+
+def test_phone_damage_id_send_demand_matches():
+    """신분증을 보내달라는 요구와 함께하는 폰 고장은 가족사칭으로 매칭되어야 함"""
+    phishing = "엄마 폰 액정 깨졌어, 신분증을 사진 찍어서 보내줘"
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "가족사칭 정황" in matched
+
+
+def test_investigative_agency_remittance_verb_form_matches():
+    """송금해달라는 요구가 있는 수사기관 사칭은 여전히 매칭되어야 함"""
+    phishing = "여기는 서울중앙지검 금융범죄수사부입니다. 아래 계좌로 즉시 송금하시기 바랍니다."
+    matched = [rule.keyword for rule in RULES if rule.pattern.search(phishing)]
+    assert "수사기관 사칭" in matched
+
+
+def test_task5_scoring_sentence_matches_at_least_three_rules():
+    """Task 5 채점 대상 문장은 4개 규칙(합계 100)에 매칭되어야 함"""
+    text = "서울중앙지검 수사관입니다. 안전계좌로 즉시 이체하지 않으면 계좌가 동결됩니다."
+    matched = [rule for rule in RULES if rule.pattern.search(text)]
+    assert len(matched) >= 3
+    assert sum(rule.weight for rule in matched) >= 70

@@ -53,3 +53,25 @@ textarea {
 .rt-ScrollAreaThumb:hover {
     background-color: rgba(27, 39, 51, 0.45) !important;
 }
+
+/* 스켈레톤 로딩 — 밝은 바탕이므로 흰색이 아니라 잉크 계열 농담으로 훑는다 */
+@keyframes shimmer {
+    0% { background-position: -600px 0; }
+    100% { background-position: 600px 0; }
+}
+
+.skeleton-block {
+    background: linear-gradient(
+        90deg,
+        rgba(27, 39, 51, 0.05) 0%,
+        rgba(27, 39, 51, 0.10) 50%,
+        rgba(27, 39, 51, 0.05) 100%
+    );
+    background-size: 600px 100%;
+    animation: shimmer 1.6s infinite linear;
+    border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-block { animation: none; }
+}

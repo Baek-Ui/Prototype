@@ -1,38 +1,25 @@
-/* Custom Stylesheet for Reflex Application */
+/* Custom Stylesheet for Reflex Application
+   라이트 테마 기준. Radix 컴포넌트에 인라인 스타일로 넣을 수 없는 부분만 여기서 덮는다. */
 
-/* Target Radix Themes Input Placeholders for maximum visibility on dark backgrounds */
-.rt-TextFieldRoot input::placeholder {
-    color: rgba(255, 255, 255, 0.65) !important;
-    -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+/* 입력 placeholder — 밝은 바탕에서 너무 흐리지 않게 */
+.rt-TextFieldRoot input::placeholder,
+.rt-TextFieldInput::placeholder,
+input::placeholder,
+textarea::placeholder {
+    color: rgba(92, 107, 122, 0.68) !important;
+    -webkit-text-fill-color: rgba(92, 107, 122, 0.68) !important;
     opacity: 1 !important;
 }
 
-.rt-TextFieldInput::placeholder {
-    color: rgba(255, 255, 255, 0.65) !important;
-    -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
-    opacity: 1 !important;
+/* 입력 글자색 — 슬레이트 잉크 */
+.rt-TextFieldRoot input,
+.rt-TextFieldInput,
+input,
+textarea {
+    color: #1B2733 !important;
 }
 
-input::placeholder {
-    color: rgba(255, 255, 255, 0.65) !important;
-    -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
-    opacity: 1 !important;
-}
-
-/* Radix Themes 내부 input의 입력 글자 색상을 선명한 흰색으로 강제 오버라이드 */
-.rt-TextFieldRoot input {
-    color: #FFFFFF !important;
-}
-
-.rt-TextFieldInput {
-    color: #FFFFFF !important;
-}
-
-input {
-    color: #FFFFFF !important;
-}
-
-/* Custom premium scrollbar for native scrollable areas */
+/* Custom scrollbar for native scrollable areas */
 ::-webkit-scrollbar {
     width: 8px !important;
     height: 8px !important;
@@ -44,25 +31,25 @@ input {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.5) !important;
+    background: rgba(27, 39, 51, 0.28) !important;
     border-radius: 4px !important;
     transition: background 0.2s ease !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.8) !important;
+    background: rgba(27, 39, 51, 0.45) !important;
 }
 
-/* Style Radix Themes custom ScrollArea elements (like the page scrollbar) */
+/* Radix Themes ScrollArea (페이지 스크롤바) */
 .rt-ScrollAreaScrollbar {
     background: transparent !important;
 }
 
 .rt-ScrollAreaThumb {
-    background-color: rgba(255, 255, 255, 0.5) !important;
+    background-color: rgba(27, 39, 51, 0.28) !important;
     border-radius: 9999px !important;
 }
 
 .rt-ScrollAreaThumb:hover {
-    background-color: rgba(255, 255, 255, 0.8) !important;
+    background-color: rgba(27, 39, 51, 0.45) !important;
 }

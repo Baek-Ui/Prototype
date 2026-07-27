@@ -3,6 +3,7 @@ import reflex as rx
 from .. import styles
 from ..components.input_panel import example_chips, input_panel
 from ..components.layout import page_shell
+from ..state import State
 
 
 def home() -> rx.Component:
@@ -36,6 +37,17 @@ def home() -> rx.Component:
                 margin_bottom="3rem",
             ),
             input_panel(),
+            # 빈 입력 등의 안내는 네이티브 alert 대신 화면 안에서 보여준다
+            rx.cond(
+                State.error_message != "",
+                rx.callout(
+                    State.error_message,
+                    icon="triangle-alert",
+                    color_scheme="red",
+                    margin_top="1rem",
+                    width=["95%", "90%", "680px"],
+                ),
+            ),
             example_chips(),
             width="100%",
             align="center",

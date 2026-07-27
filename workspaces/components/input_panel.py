@@ -75,6 +75,8 @@ def input_panel() -> rx.Component:
                     padding_x="1.5rem",
                     height="2.75rem",
                     cursor="pointer",
+                    on_click=State.detect,
+                    loading=State.is_detecting,
                     transition=styles.HOVER_TRANSITION,
                     _hover={"filter": "brightness(1.08)", "transform": "translateY(-1px)"},
                 ),

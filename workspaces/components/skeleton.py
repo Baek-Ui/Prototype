@@ -45,7 +45,7 @@ def _step_node(index: int, label: str) -> rx.Component:
                 width="1.15rem",
                 height="1.15rem",
                 flex="none",
-                border_radius="full",
+                border_radius="9999px",
                 display="flex",
                 align_items="center",
                 justify_content="center",
@@ -89,8 +89,10 @@ def stepper() -> rx.Component:
     )
 
 
-def _bar(width: str, height: str = "14px") -> rx.Component:
-    return rx.box(class_name="skeleton-block", width=width, height=height)
+def _bar(width: str, height: str = "14px", radius: str | None = None) -> rx.Component:
+    return rx.box(
+        class_name="skeleton-block", width=width, height=height, border_radius=radius
+    )
 
 
 def report_skeleton() -> rx.Component:
@@ -98,7 +100,8 @@ def report_skeleton() -> rx.Component:
     return rx.vstack(
         stepper(),
         rx.flex(
-            _bar("5.5rem", "5.5rem"),
+            # 게이지 자리는 원형으로 — 실제 리포트와 형태가 어긋나면 전환이 튄다
+            _bar("5.5rem", "5.5rem", radius="9999px"),
             rx.vstack(
                 _bar("45%", "1.5rem"),
                 _bar("78%"),

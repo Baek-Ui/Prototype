@@ -3,7 +3,7 @@ import reflex as rx
 from .. import styles
 from ..state import State
 
-STEP_LABELS = ["전처리", "위험 패턴 대조", "유사 사례 검색", "종합 판정"]
+STEP_LABELS = ["전처리", "문구 벡터화", "위험 패턴 대조", "유사 사례 검색", "종합 판정"]
 
 
 def _step_node(index: int, label: str) -> rx.Component:
@@ -96,9 +96,12 @@ def _bar(width: str, height: str = "14px", radius: str | None = None) -> rx.Comp
 
 
 def report_skeleton() -> rx.Component:
-    """리포트 카드와 동일한 레이아웃의 로딩 플레이스홀더."""
+    """리포트 카드와 동일한 레이아웃의 로딩 플레이스홀더.
+
+    스테퍼는 분석 섹션이 직접 들고 있다 — 진행 상황은 리포트가 아니라
+    그 위의 벡터 그래프에도 걸리기 때문이다.
+    """
     return rx.vstack(
-        stepper(),
         rx.flex(
             # 게이지 자리는 원형으로 — 실제 리포트와 형태가 어긋나면 전환이 튄다
             _bar("5.5rem", "5.5rem", radius="9999px"),

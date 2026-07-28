@@ -1,22 +1,142 @@
 /* Custom Stylesheet for Reflex Application
-   라이트 테마 기준. Radix 컴포넌트에 인라인 스타일로 넣을 수 없는 부분만 여기서 덮는다. */
+   색 토큰의 실제 값이 여기 있다. workspaces/styles.py는 전부 var(--bu-*)로
+   이 값을 가리키기만 한다.
 
-/* 입력 placeholder — 밝은 바탕에서 너무 흐리지 않게 */
+   Reflex의 ThemeProvider는 attribute="class"로 동작하므로 <html>에 "dark"
+   또는 "light" 클래스가 붙는다. 기본은 다크(rxconfig.py의 appearance).
+   :root에 다크를 두어, 클래스가 붙기 전 첫 페인트에서도 어두운 화면이
+   나오게 한다 — 라이트로 깜빡였다가 어두워지는 것을 막는다. */
+
+:root,
+.dark {
+    --bu-bg-base: #0D0D15;
+    --bu-surface: #1A1A23;
+    --bu-navbar-bg: rgba(13, 13, 21, 0.78);
+    --bu-panel-translucent: rgba(26, 26, 35, 0.55);
+
+    --bu-accent: #C0C1FF;
+    --bu-accent-soft: #D0BCFF;
+    --bu-on-accent: #FFFFFF;
+    --bu-accent-wash: rgba(192, 193, 255, 0.10);
+
+    --bu-text-ink: #E4E1ED;
+    --bu-text-muted: #A3A0B4;
+    --bu-text-faint: rgba(163, 160, 180, 0.62);
+
+    --bu-border: rgba(228, 225, 237, 0.13);
+    --bu-subtle-fill: rgba(228, 225, 237, 0.05);
+    --bu-track: rgba(228, 225, 237, 0.12);
+
+    /* 어두운 바탕에서는 그림자가 묻히므로 깊이를 림 라이팅과 함께 준다 */
+    --bu-card-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.45);
+
+    /* 채워진 버튼: 흰 글자가 얹히므로 진한 쪽 인디고/퍼플 */
+    --bu-primary-gradient: linear-gradient(90deg, #8083FF 0%, #7B3FD4 100%);
+    /* 글자 자체를 칠하는 용도: 어두운 바탕에서 읽히도록 밝은 쪽 */
+    --bu-text-gradient: linear-gradient(90deg, #C0C1FF 0%, #D0BCFF 100%);
+
+    --bu-bg-wash: radial-gradient(58rem 30rem at 15% -10%, rgba(128, 131, 255, 0.14), transparent 64%);
+    --bu-graph-wash: radial-gradient(30rem 20rem at 50% 40%, rgba(192, 193, 255, 0.07), transparent 70%);
+
+    --bu-risk-safe: #5BD6A0;
+    --bu-risk-caution: #FFC46B;
+    --bu-risk-danger: #FF9E93;
+    --bu-danger-wash: rgba(255, 158, 147, 0.14);
+    --bu-danger-border: rgba(255, 158, 147, 0.38);
+
+    --bu-scrollbar: rgba(228, 225, 237, 0.22);
+    --bu-scrollbar-hover: rgba(228, 225, 237, 0.38);
+    --bu-shimmer-low: rgba(228, 225, 237, 0.04);
+    --bu-shimmer-high: rgba(228, 225, 237, 0.10);
+}
+
+.light {
+    --bu-bg-base: #F2F2F7;
+    --bu-surface: #FFFFFF;
+    --bu-navbar-bg: rgba(255, 255, 255, 0.82);
+    --bu-panel-translucent: rgba(255, 255, 255, 0.66);
+
+    --bu-accent: #4B4ACF;
+    --bu-accent-soft: #7B3FD4;
+    --bu-on-accent: #FFFFFF;
+    --bu-accent-wash: rgba(75, 74, 207, 0.09);
+
+    --bu-text-ink: #14141C;
+    --bu-text-muted: #55556B;
+    --bu-text-faint: rgba(85, 85, 107, 0.68);
+
+    --bu-border: rgba(20, 20, 28, 0.13);
+    --bu-subtle-fill: rgba(20, 20, 28, 0.03);
+    --bu-track: rgba(20, 20, 28, 0.10);
+
+    --bu-card-shadow: 0 0.75rem 2rem rgba(20, 20, 28, 0.09);
+
+    --bu-primary-gradient: linear-gradient(90deg, #4B4ACF 0%, #7B3FD4 100%);
+    --bu-text-gradient: linear-gradient(90deg, #4B4ACF 0%, #7B3FD4 100%);
+
+    --bu-bg-wash: radial-gradient(58rem 30rem at 15% -10%, rgba(75, 74, 207, 0.08), transparent 64%);
+    --bu-graph-wash: radial-gradient(30rem 20rem at 50% 40%, rgba(123, 63, 212, 0.07), transparent 70%);
+
+    --bu-risk-safe: #227A54;
+    --bu-risk-caution: #9A6A12;
+    --bu-risk-danger: #C0503F;
+    --bu-danger-wash: rgba(192, 80, 63, 0.10);
+    --bu-danger-border: rgba(192, 80, 63, 0.32);
+
+    --bu-scrollbar: rgba(20, 20, 28, 0.28);
+    --bu-scrollbar-hover: rgba(20, 20, 28, 0.45);
+    --bu-shimmer-low: rgba(20, 20, 28, 0.05);
+    --bu-shimmer-high: rgba(20, 20, 28, 0.10);
+}
+
+/* 앵커 이동을 부드럽게 — 네비바의 섹션 링크와 rx.scroll_to()가 모두
+   이 설정을 따른다.
+
+   page_shell이 페이지 전체를 rx.scroll_area로 감싸고 있어서 실제로
+   스크롤되는 요소는 html이 아니라 Radix의 뷰포트다. 그래서 둘 다 지정한다
+   — html만 주면 아무 일도 일어나지 않는다. */
+html,
+.rt-ScrollAreaViewport {
+    scroll-behavior: smooth;
+}
+
+/* 모션 최소화를 켠 사용자에게 긴 페이지를 훑는 애니메이션은 특히 괴롭다 */
+@media (prefers-reduced-motion: reduce) {
+    html,
+    .rt-ScrollAreaViewport {
+        scroll-behavior: auto;
+    }
+}
+
+/* 한글 줄바꿈 — 브라우저는 한글을 CJK로 보고 글자 단위로 끊기 때문에,
+   그대로 두면 좁은 카드에서 "필요 없습 / 니다"처럼 어절 한가운데가 잘린다.
+   keep-all은 한글을 띄어쓰기에서만 끊게 하고, 영문·비CJK는 원래대로 둔다.
+   대신 URL처럼 공백 없는 긴 토큰이 카드를 밀어내는 걸 막는 안전장치로
+   overflow-wrap을 함께 켠다 — 끊을 데가 정말 없을 때만 강제로 끊는다.
+
+   두 속성 다 상속되므로 body에 한 번 선언하면 카드·단계·리포트까지
+   전부 따라온다. */
+body {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+/* 입력 placeholder */
 .rt-TextFieldRoot input::placeholder,
 .rt-TextFieldInput::placeholder,
 input::placeholder,
 textarea::placeholder {
-    color: rgba(92, 107, 122, 0.68) !important;
-    -webkit-text-fill-color: rgba(92, 107, 122, 0.68) !important;
+    color: var(--bu-text-faint) !important;
+    -webkit-text-fill-color: var(--bu-text-faint) !important;
     opacity: 1 !important;
 }
 
-/* 입력 글자색 — 슬레이트 잉크 */
+/* 입력 글자색 */
 .rt-TextFieldRoot input,
 .rt-TextFieldInput,
 input,
 textarea {
-    color: #1B2733 !important;
+    color: var(--bu-text-ink) !important;
 }
 
 /* Custom scrollbar for native scrollable areas */
@@ -31,13 +151,13 @@ textarea {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(27, 39, 51, 0.28) !important;
+    background: var(--bu-scrollbar) !important;
     border-radius: 4px !important;
     transition: background 0.2s ease !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(27, 39, 51, 0.45) !important;
+    background: var(--bu-scrollbar-hover) !important;
 }
 
 /* Radix Themes ScrollArea (페이지 스크롤바) */
@@ -46,15 +166,15 @@ textarea {
 }
 
 .rt-ScrollAreaThumb {
-    background-color: rgba(27, 39, 51, 0.28) !important;
+    background-color: var(--bu-scrollbar) !important;
     border-radius: 9999px !important;
 }
 
 .rt-ScrollAreaThumb:hover {
-    background-color: rgba(27, 39, 51, 0.45) !important;
+    background-color: var(--bu-scrollbar-hover) !important;
 }
 
-/* 스켈레톤 로딩 — 밝은 바탕이므로 흰색이 아니라 잉크 계열 농담으로 훑는다 */
+/* 스켈레톤 로딩 — 바탕색과 같은 계열의 농담으로 훑는다 */
 @keyframes shimmer {
     0% { background-position: -600px 0; }
     100% { background-position: 600px 0; }
@@ -63,9 +183,9 @@ textarea {
 .skeleton-block {
     background: linear-gradient(
         90deg,
-        rgba(27, 39, 51, 0.05) 0%,
-        rgba(27, 39, 51, 0.10) 50%,
-        rgba(27, 39, 51, 0.05) 100%
+        var(--bu-shimmer-low) 0%,
+        var(--bu-shimmer-high) 50%,
+        var(--bu-shimmer-low) 100%
     );
     background-size: 600px 100%;
     animation: shimmer 1.6s infinite linear;
@@ -74,4 +194,49 @@ textarea {
 
 @media (prefers-reduced-motion: reduce) {
     .skeleton-block { animation: none; }
+}
+
+/* 랜딩 카드 플로팅 — 아주 얕게 위아래로 떠 있게 해서 정적인 소개 구간에
+   생기를 준다. 진폭이 크면 읽는 데 방해가 되므로 0.45rem을 넘기지 않는다. */
+@keyframes card-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-0.45rem); }
+}
+
+.float-card {
+    animation: card-float 7s ease-in-out infinite;
+    /* 합성 단계로 올려 스크롤 중 떨림을 막는다 */
+    will-change: transform;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* 같은 줄의 카드가 한 몸처럼 흔들리면 기계적으로 보인다. 음수 지연으로
+   시작 시점을 주기 중간에 흩어 놓아 서로 어긋나게 띄운다. */
+.float-card:nth-child(2) { animation-delay: -2.33s; }
+.float-card:nth-child(3) { animation-delay: -4.66s; }
+
+/* 읽으려고 마우스를 올린 카드는 멈춘다 — 움직이는 글을 읽게 두지 않는다.
+   transform은 애니메이션이 쥐고 있으므로 강조는 테두리와 그림자로만 준다. */
+.float-card:hover {
+    animation-play-state: paused;
+    border-color: var(--bu-accent) !important;
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.35);
+}
+
+.light .float-card:hover {
+    box-shadow: 0 1rem 2.5rem rgba(20, 20, 28, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .float-card { animation: none; }
+}
+
+/* 브랜드 워드마크는 짙은 남보라(#303080) 한 가지로만 그려져 있어 어두운
+   바탕에서 거의 보이지 않는다. 다크에서는 밝기를 끌어올려 띄운다. */
+.brand-logo {
+    filter: brightness(2.9) saturate(1.15);
+}
+
+.light .brand-logo {
+    filter: none;
 }

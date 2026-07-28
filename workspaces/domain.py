@@ -5,6 +5,7 @@ from typing import List
 
 class DetectionStatus(Enum):
     PREPROCESSING = "문구 전처리 중..."
+    VECTORIZING = "문구 벡터화 중..."
     RULE_SCORING = "위험 패턴 대조 중..."
     SIMILARITY_SEARCH = "유사 사례 검색 중..."
     JUDGING = "종합 판정 중..."
@@ -63,6 +64,57 @@ class SimilarCase:
 
 
 @dataclass
+class TextHighlight:
+    """입력 문구 안에서 위험 신호가 걸린 구간. 반드시 서로 겹치지 않는다."""
+
+    start: int
+    end: int
+    keyword: str
+    weight: int
+
+
+class GraphNodeKind(Enum):
+    INPUT = "입력 문구"
+    CASE = "실제 사례"
+    RULE = "위험 신호"
+
+
+class GraphEdgeKind(Enum):
+    RULE = "규칙"
+    CASE = "사례"
+
+
+@dataclass
+class GraphNode:
+    id: str
+    label: str
+    kind: GraphNodeKind
+    x: float
+    y: float
+    z: float
+    # CASE 노드만 채운다. RULE·INPUT 노드에서는 각각 신호 설명과 빈 문자열.
+    detail: str = ""
+    is_phishing: bool = False
+    # 이번 분석에서 실제로 걸린 규칙인지. 켜진 노드만 강조해 그린다.
+    is_active: bool = False
+
+
+@dataclass
+class GraphEdge:
+    source_id: str
+    target_id: str
+    kind: GraphEdgeKind
+    # RULE 엣지는 규칙 가중치, CASE 엣지는 코사인 유사도(0~1)를 굵기 근거로 쓴다.
+    strength: float = 0.0
+
+
+@dataclass
+class VectorGraph:
+    nodes: List[GraphNode] = field(default_factory=list)
+    edges: List[GraphEdge] = field(default_factory=list)
+
+
+@dataclass
 class DetectionReport:
     input_text: str
     risk_score: int
@@ -70,3 +122,6 @@ class DetectionReport:
     evidences: List[DetectionEvidence] = field(default_factory=list)
     similar_cases: List[SimilarCase] = field(default_factory=list)
     recommended_actions: List[str] = field(default_factory=list)
+    highlights: List[TextHighlight] = field(default_factory=list)
+    attack_type: str = ""
+    attack_similarity: int = 0

@@ -32,7 +32,7 @@ def _example_chip(category: str, text: str) -> rx.Component:
         background_color=styles.SUBTLE_FILL,
         border=f"1px solid {styles.BORDER_COLOR}",
         padding="0.5rem 1rem",
-        border_radius="12px",
+        border_radius=styles.RADIUS_FULL,
         cursor="pointer",
         transition=styles.HOVER_TRANSITION,
         on_click=lambda: State.set_input_text(text),
@@ -56,9 +56,13 @@ def input_panel() -> rx.Component:
                 background="transparent",
                 color=styles.TEXT_INK,
                 border="none",
+                # 패널 모서리를 키운 만큼 안쪽 입력창도 둥글게 맞춘다.
+                # 그대로 두면 둥근 패널 안에 각진 사각형이 겹쳐 보인다.
+                border_radius=styles.RADIUS_MD,
+                padding="0.85rem 1rem",
                 resize="vertical",
                 _placeholder={"color": styles.TEXT_FAINT},
-                _focus={"box_shadow": "none"},
+                _focus={"box_shadow": "none", "outline": "none"},
             ),
             rx.flex(
                 rx.text(
@@ -71,7 +75,7 @@ def input_panel() -> rx.Component:
                     rx.icon("arrow-right", size=18),
                     background=styles.PRIMARY_GRADIENT,
                     color=styles.ON_ACCENT,
-                    border_radius="full",
+                    border_radius=styles.RADIUS_FULL,
                     padding_x="1.5rem",
                     height="2.75rem",
                     cursor="pointer",
@@ -90,8 +94,12 @@ def input_panel() -> rx.Component:
             spacing="3",
             padding="1.25rem",
         ),
-        style=styles.CARD_STYLE,
+        id="input-panel",
+        # 히어로의 주인공이라 카드보다 한 단계 더 둥글게 간다
+        style={**styles.CARD_STYLE, "border_radius": styles.RADIUS_XL},
         width=["95%", "90%", "680px"],
+        # 고정 네비바에 가려지지 않도록 스크롤 도착점을 아래로 내린다
+        scroll_margin_top="6rem",
     )
 
 
